@@ -10,9 +10,9 @@ Las herramientas de empaquetado se prepararon en un entorno aislado con `uv --of
 
 Gitleaks sobre archivos e historial completo y TruffleHog sobre filesystem e historial terminaron con salida 0, sin hallazgos. La verificación externa de credenciales estuvo desactivada. Semgrep local terminó con salida 0, sin hallazgos ni errores: 77 archivos, incluidos los dos Python del instalador. Swift/Bash tienen cobertura genérica; no es análisis semántico específico de esos lenguajes. El icono PNG preexistente de 1024 px se omitió por tamaño (>1 MB); no cambió en esta preparación.
 
-La revisión de privacidad no encontró rutas personales, informes privados ni metadatos locales de Xcode en los 90 archivos publicables. Código, recursos, configuración y pruebas coinciden con Beta 12; el procedimiento de regresión solo cambia su enlace al resumen público. Los hooks normales de Git se conservan y el nuevo estado local se verifica antes de publicar. Los resultados funcionales de las secciones siguientes mantienen sus fechas históricas.
+La revisión de privacidad no encontró rutas personales, informes privados ni metadatos locales de Xcode en los 90 archivos publicables. Código, recursos, configuración y pruebas coinciden con Beta 12; el procedimiento de regresión solo cambia su enlace al resumen público. Los hooks normales de Git se conservan y el estado local se verificó antes de la publicación inicial. Los resultados funcionales de las secciones siguientes mantienen sus fechas históricas.
 
-La copia se prepara sin publicar código ni instaladores y sin configurar un remoto. La decisión de destino/publicación sigue pendiente. La licencia MIT y el crédito Andrés Vargas se conservan.
+La preparación se mantuvo local hasta aprobar el destino. El primer envío publicó el commit `fa13d9a` en [JAndresVC/MarkD-macOS](https://github.com/JAndresVC/MarkD-macOS), rama `main`, con 90 archivos. Se comprobó acceso público sin autenticación y coincidencia del commit remoto con el aprobado. La licencia MIT y el crédito Andrés Vargas se conservan. Esta actualización de estado no añade QA funcional ni distribuye instaladores.
 
 ## QA funcional de Beta 12 (2026-11-10)
 

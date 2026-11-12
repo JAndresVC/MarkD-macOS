@@ -140,10 +140,14 @@ El bundle sigue siendo `com.Andres.MarkD`: cambiarlo afectaría ajustes y gesti�
 
 ## Preparación de publicación (2026-11-12)
 
-Esta copia conserva el historial público separado, MIT, el crédito Andrés Vargas y correo privado de GitHub. No incorpora el historial del repositorio de trabajo ni configura un remoto. El objetivo de esta preparación es reunir el código de Beta 12 con documentación apta para publicar; no añade funciones a la app ni requiere Beta 13 por los cambios documentales.
+La preparación conservó el historial público separado, MIT, el crédito Andrés Vargas y correo privado de GitHub, sin incorporar el historial del repositorio de trabajo. El remoto se configuró únicamente después de aprobar la publicación. Esta preparación reunió el código de Beta 12 con documentación apta para publicar; no añade funciones a la app ni requiere Beta 13 por los cambios documentales.
 
 Los controles locales de archivos e historial con Gitleaks y TruffleHog terminaron con salida 0 y sin hallazgos. Semgrep terminó con salida 0, sin hallazgos/errores, sobre 77 archivos; su cobertura de Swift/Bash es genérica. Release/Analyze, once suites, metadatos, firma local y empaquetado de comprobación de esta copia también pasaron. El identificador del estado local revisado se consulta con `git rev-parse HEAD`; el historial usa únicamente la identidad noreply aprobada. Resultados en [docs/VALIDATION.md](docs/VALIDATION.md), separados de la QA funcional del 2026-11-10.
 
 Antes de publicar, verificar el estado final con Gitleaks, TruffleHog y las reglas locales de Semgrep, incluidos los commits nuevos; conservar los hooks existentes. La cobertura genérica de Semgrep no sustituye una revisión específica de Swift.
 
-Publicar requiere decidir destino/nombre y autorizar la creación del repositorio o el cambio de visibilidad. La publicación del código como beta y la distribución de una app notarizada son decisiones separadas.
+## Publicación del código
+
+El código Beta 12 se publicó en [JAndresVC/MarkD-macOS](https://github.com/JAndresVC/MarkD-macOS), rama `main`, con licencia MIT. El primer envío fue el commit `fa13d9a`, revisado antes de publicar. El remoto `origin` de esta copia apunta a ese repositorio. Este seguimiento documental registra el resultado; no cambia la app ni añade pruebas funcionales.
+
+La publicación del código como beta y la distribución de una app notarizada siguen siendo decisiones separadas.
