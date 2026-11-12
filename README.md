@@ -2,7 +2,7 @@
 
 Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para macOS, construido con SwiftUI y AppKit.
 
-**Estado: 0.2.0 Beta 9.** Proyecto en desarrollo; todavía no es una versión estable. Actualmente se compila desde el código y no ofrece un instalador público notarizado.
+**Estado: 0.2.0 Beta 12.** Proyecto en desarrollo; todavía no es una versión estable. Se compila desde el código y no ofrece un instalador público notarizado.
 
 ![Markdown con formato en Vista previa](docs/screenshots/preview.jpg)
 
@@ -18,7 +18,7 @@ Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para m
 
 ![Edición del documento de ejemplo](docs/screenshots/editor.jpg)
 
-Las capturas usan un documento sintético en la Beta 9; no contienen archivos personales.
+Las capturas corresponden a Beta 9 y usan un documento sintético; no muestran archivos personales ni representan una nueva prueba de Beta 12.
 
 ## Markdown y archivos
 
@@ -26,14 +26,14 @@ Abre archivos `.md`, `.markdown` y texto plano. Lee y guarda UTF-8 preservando e
 
 La Vista previa admite encabezados ATX y Setext, párrafos, citas, listas básicas, divisores, bloques de código y formato inline. Tablas, imágenes, listas de tareas y notas al pie todavía no están implementadas; no se declara compatibilidad completa con CommonMark o GFM.
 
-El editor y la Vista previa usan componentes nativos, sin WebView ni servicios de red.
+El editor y la Vista previa usan componentes nativos, sin WebView ni servicios de red. Beta 10 añadió filas de listas bajo demanda; Beta 11 corrigió el contraste de selección sin foco en Editar/RAW. En Beta 12, Abrir desde la bienvenida usa el flujo nativo de documentos para conservar el acceso necesario al guardar y preservar versiones.
 
 ## Requisitos
 
 - macOS 26.4 o posterior como mínimo declarado por el proyecto.
 - Xcode 27 con SDK macOS 27 para compilar la beta actual.
 
-La QA reciente se ejecutó en macOS 27.2, con Xcode 27.0 y Apple Silicon. **La ejecución en macOS 26.4 sigue pendiente**: el mínimo declarado no equivale a una prueba de compatibilidad completada.
+La QA funcional de Beta 12 del 2026-11-10 se ejecutó en macOS 27.2.1, Xcode 27.2 y SDK macOS 27.2 sobre Apple Silicon. **La ejecución en macOS 26.4 sigue pendiente**: el mínimo declarado no equivale a una prueba de compatibilidad completada.
 
 ## Compilar y abrir
 
@@ -68,10 +68,11 @@ Esta entrada solicita el cierre normal de MarkD antes de recompilar y cancela la
 
 - **Una edición puede perderse si la app termina antes de completar un guardado o autosave.** Para persistir un cambio importante, usa ⌘S y comprueba que termine. La recuperación posterior al autosave pasó las pruebas; no se garantiza recuperar cada pulsación.
 - Una escritura externa directa puede dejar visible el texto anterior hasta resolver el conflicto nativo al guardar.
-- La Beta 9 mejora Vista previa con libros sintéticos grandes. Faltan archivos reales de uso, bloques individuales enormes y una revisión completa de memoria.
-- Siguen pendientes VoiceOver hablado, Reducir movimiento con la preferencia del sistema activa y la matriz completa de temas, tamaños, idiomas e instalación.
+- Párrafos y bloques de código individuales enormes aún pueden causar pausas. Hace falta ampliar la cobertura de edición sostenida y memoria/Leaks.
+- La corrección de permisos de Beta 12 pasó los recorridos controlados de apertura/guardado; faltan más documentos y volúmenes, además de comprobar la actualización instalada y el uso diario.
+- VoiceOver hablado y la matriz visual completa siguen pendientes. La navegación al encabezado final con Reducir movimiento activo se comprobó en Beta 10; esa prueba no cierra toda la validación de accesibilidad.
 
-Resultados y límites de las comprobaciones: [Validación](docs/VALIDATION.md). Próximas etapas: [guía del proyecto](PROJECT_GUIDE.md).
+Resultados, fechas y límites: [Validación](docs/VALIDATION.md). Próximas etapas: [guía del proyecto](PROJECT_GUIDE.md).
 
 ## Pruebas
 
@@ -79,29 +80,33 @@ Resultados y límites de las comprobaciones: [Validación](docs/VALIDATION.md). 
 ./script/test_all.sh
 ```
 
-Ejecuta las once suites y conserva resultados por suite. Para añadir la comprobación de metadatos de un bundle:
+Ejecuta once suites y conserva resultados por suite. Para añadir la comprobación de metadatos de un bundle:
 
 ```bash
 ./script/test_all.sh /ruta/a/MarkD.app
 ```
 
-Los benchmarks y recorridos UI se ejecutan por separado; no forman parte del total automático.
+Los benchmarks y recorridos UI se ejecutan por separado. La [regresión de apertura y guardado](Tests/DocumentOpeningRegression.md) describe el recorrido asistido de Beta 12 y no forma parte del total automático.
 
 ## Empaquetado local
 
+Para este paso necesitas `uv` disponible. Prepara las herramientas aisladas desde la raíz:
+
 ```bash
+uv venv .build/dmg-tools
+uv pip install --python .build/dmg-tools/bin/python --require-hashes -r script/dmg/requirements.txt
 ./script/package_dmg.sh
 ```
 
-Genera un DMG en `dist/`, valida la app y rechaza sobrescribir un archivo existente. Si ya existe el DMG, admite otra ruta de salida libre como primer argumento.
+Genera `dist/MarkD-0.2.0-Beta-12-Installer.dmg`, con MarkD a la izquierda y Aplicaciones a la derecha. Valida la app y la imagen, y rechaza sobrescribir un archivo existente. Admite otra ruta de salida libre como primer argumento.
 
-Estos paquetes tienen firma local para pruebas; no son una distribución pública notarizada. Compilaciones y DMG se excluyen de Git.
+Las herramientas del instalador tienen versiones y hashes fijados; no se incorporan a la app. Los paquetes usan firma local para pruebas y no son una distribución pública notarizada. Compilaciones y DMG se excluyen de Git.
 
 ## Colaborar
 
 Antes de cambiar el proyecto, lee [PROJECT_GUIDE.md](PROJECT_GUIDE.md) y las [instrucciones para agentes](AGENTS.md).
 
-Al reportar un error, incluye la versión de MarkD y macOS, los pasos para reproducirlo y el resultado esperado. Usa un ejemplo mínimo sin documentos privados ni credenciales.
+Al reportar un error, incluye la versión de MarkD y macOS, los pasos para reproducirlo y el resultado esperado. Usa un ejemplo mínimo sin documentos privados ni credenciales. Si aparece un error de guardado, conserva el texto mediante Guardar como en una copia separada antes de cerrar.
 
 ## Licencia y autor
 

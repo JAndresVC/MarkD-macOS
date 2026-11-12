@@ -10,7 +10,6 @@ struct WelcomeView: View {
     @Environment(\.controlActiveState) private var activeState
     @AppStorage("appLanguage") private var storedLanguage = AppLanguage.system.rawValue
     @State private var recentURLs: [URL] = []
-    @State private var showsImporter = false
     @State private var openingURL: URL?
     @State private var openError: String?
 
@@ -21,19 +20,11 @@ struct WelcomeView: View {
             strings: strings.welcome,
             recentURLs: recentURLs,
             newDocument: { createDocument(text: "") },
-            openFile: { showsImporter = true },
+            openFile: { NSDocumentController.shared.openDocument(nil) },
             openGuide: { createDocument(text: strings.welcomeDoc) },
             openRecent: { url in Task { await openFile(at: url) } }
         )
         .disabled(openingURL != nil)
-        .fileImporter(isPresented: $showsImporter, allowedContentTypes: MarkDocument.readableContentTypes) { result in
-            switch result {
-            case .success(let url):
-                Task { await openFile(at: url) }
-            case .failure(let error):
-                present(error)
-            }
-        }
         .alert(strings.welcome.openError, isPresented: Binding(
             get: { openError != nil },
             set: { if !$0 { openError = nil } }

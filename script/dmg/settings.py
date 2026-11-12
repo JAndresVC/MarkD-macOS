@@ -1,0 +1,14 @@
+format = "UDZO"
+files = [defines["app"]]
+symlinks = {"Applications": "/Applications"}
+background = defines["background"]
+window_rect = ((200, 160), (660, 488))
+default_view = "icon-view"
+show_status_bar = True
+show_toolbar = False
+show_sidebar = False
+show_pathbar = False
+show_tab_view = False
+icon_size = 160
+text_size = 16
+icon_locations = {"MarkD.app": (165, 200), "Applications": (495, 200)}

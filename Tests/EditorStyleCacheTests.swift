@@ -1,10 +1,12 @@
 import Foundation
 import AppKit
+import SwiftUI
 
 @main
 @MainActor
 enum EditorStyleCacheTests {
     static func main() {
+        _ = NSApplication.shared
         var failures: [String] = []
         var cache = EditorStyleCache()
 
@@ -70,11 +72,41 @@ enum EditorStyleCacheTests {
             failures.append("could not create the editor scroll surface")
         }
 
+        var nativeSelection = NSTextView().selectedTextAttributes
+        nativeSelection[.foregroundColor] = NSColor.labelColor
+        for theme in AppTheme.allCases {
+            for editable in [true, false] {
+                let host = NSHostingView(rootView: EditorView(
+                    text: .constant("Selected café 日本語"), scrollToLine: .constant(nil),
+                    isEditable: editable
+                ).environment(\.appTheme, theme))
+                let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
+                                      styleMask: [.titled], backing: .buffered, defer: false)
+                window.appearance = NSAppearance(named: theme.windowAppearanceName)
+                window.contentView = host
+                host.layoutSubtreeIfNeeded()
+                RunLoop.main.run(until: Date().addingTimeInterval(0.1))
+                guard let editor = descendantTextView(in: host) else {
+                    failures.append("could not create the themed editor")
+                    continue
+                }
+                // Native selection colors adapt together when focus leaves the editor.
+                if !(editor.selectedTextAttributes as NSDictionary).isEqual(nativeSelection as NSDictionary) {
+                    failures.append("\(theme.rawValue) \(editable ? "Edit" : "RAW") overrides native selection colors")
+                }
+            }
+        }
+
         if failures.isEmpty {
             print("EditorStyleCacheTests: passed")
         } else {
             for failure in failures { fputs("FAIL: \(failure)\n", stderr) }
             exit(1)
         }
+    }
+
+    private static func descendantTextView(in view: NSView) -> NSTextView? {
+        if let textView = view as? NSTextView { return textView }
+        return view.subviews.lazy.compactMap { descendantTextView(in: $0) }.first
     }
 }

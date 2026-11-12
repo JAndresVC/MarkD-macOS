@@ -43,6 +43,12 @@ enum ThemePaletteTests {
                 minimum: 4.5,
                 label: "\(theme.rawValue) selected text"
             )
+            NSAppearance(named: theme.windowAppearanceName)?.performAsCurrentDrawingAppearance {
+                for background in [NSColor.selectedTextBackgroundColor, .unemphasizedSelectedTextBackgroundColor] {
+                    checkContrast(Color(nsColor: .labelColor), against: Color(nsColor: background),
+                                  minimum: 4.5, label: "\(theme.rawValue) native editor selection")
+                }
+            }
 
             let syntaxColors: [(String, Color)] = [
                 ("keyword", theme.colors.syntaxKeyword),
@@ -131,7 +137,16 @@ enum ThemePaletteTests {
     }
 
     private static func contrastRatio(_ first: Color, _ second: Color) -> Double {
-        let firstLuminance = relativeLuminance(first)
+        guard let foreground = NSColor(first).usingColorSpace(.sRGB),
+              let background = NSColor(second).usingColorSpace(.sRGB) else {
+            fatalError("Could not resolve contrast colors in sRGB")
+        }
+        let alpha = foreground.alphaComponent
+        let composited = Color(.sRGB,
+            red: Double(foreground.redComponent * alpha + background.redComponent * (1 - alpha)),
+            green: Double(foreground.greenComponent * alpha + background.greenComponent * (1 - alpha)),
+            blue: Double(foreground.blueComponent * alpha + background.blueComponent * (1 - alpha)))
+        let firstLuminance = relativeLuminance(composited)
         let secondLuminance = relativeLuminance(second)
         let lighter = max(firstLuminance, secondLuminance)
         let darker = min(firstLuminance, secondLuminance)

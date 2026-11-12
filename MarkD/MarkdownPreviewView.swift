@@ -61,6 +61,12 @@ struct MarkdownPreviewView: View {
                 // Materialize a distant lazy block before its Text geometry
                 // reveals the precise match (including horizontal code scroll).
                 proxy.scrollTo(match.blockLine, anchor: .top)
+                DispatchQueue.main.async {
+                    guard isSearchPresented, activeMatchIndex == match.id,
+                          searchText == effectiveQuery, prepared?.source == source else { return }
+                    proxy.scrollTo(PreviewListRowID(blockLine: match.blockLine,
+                                                   segmentIndex: match.segmentIndex), anchor: .top)
+                }
             }
         }
         .background(theme.colors.background)
@@ -228,6 +234,7 @@ private struct MarkdownBlockView: View {
             )
         case .bulletList(let items):
             ListBlockView(
+                blockLine: block.lineNumber,
                 items: items,
                 ordered: false,
                 searchMatches: searchMatches,
@@ -235,6 +242,7 @@ private struct MarkdownBlockView: View {
             )
         case .orderedList(let items):
             ListBlockView(
+                blockLine: block.lineNumber,
                 items: items,
                 ordered: true,
                 searchMatches: searchMatches,
@@ -376,7 +384,13 @@ private struct BlockquoteView: View {
     }
 }
 
-private struct ListBlockView: View {
+struct PreviewListRowID: Hashable {
+    let blockLine: Int
+    let segmentIndex: Int
+}
+
+struct ListBlockView: View {
+    let blockLine: Int
     let items: [ListItem]
     let ordered: Bool
     let searchMatches: [PreviewSearchMatch]
@@ -403,7 +417,7 @@ private struct ListBlockView: View {
 
     var body: some View {
         let markers = self.markers
-        VStack(alignment: .leading, spacing: 4) {
+        LazyVStack(alignment: .leading, spacing: 4) {
             ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(markers[index])
@@ -424,6 +438,7 @@ private struct ListBlockView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.leading, CGFloat(item.indent) * 20)
+                .id(PreviewListRowID(blockLine: blockLine, segmentIndex: index))
             }
         }
         .padding(.bottom, 12)

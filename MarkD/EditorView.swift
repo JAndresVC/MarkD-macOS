@@ -236,18 +236,13 @@ private struct TextEditorRepresentable: NSViewRepresentable {
         let nsText = NSColor(colors.text)
         let nsBg = NSColor(colors.background)
         let nsAccent = NSColor(colors.accent)
-        let nsSelectionBackground = NSColor(colors.selectionBackground)
-        let nsSelectionText = NSColor(colors.selectionText)
         configureEditorBackground(textView, backgroundColor: nsBg)
         textView.insertionPointColor = nsAccent
         textView.font = font
         textView.textColor = nsText
         textView.typingAttributes = [.font: font, .foregroundColor: nsText]
-        // System-blue selection clashes with sepia/solarized/dracula palettes.
-        textView.selectedTextAttributes = [
-            .backgroundColor: nsSelectionBackground,
-            .foregroundColor: nsSelectionText
-        ]
+        // AppKit grays an inactive selection; keep its text legible in every palette.
+        textView.selectedTextAttributes[.foregroundColor] = NSColor.labelColor
     }
 
     private func performScroll(to lineIndex: Int, in textView: NSTextView) {

@@ -15,6 +15,32 @@ private struct PreviewDocumentFixture: View {
     }
 }
 
+@MainActor
+private final class ListSearchState: ObservableObject {
+    @Published var activeID: Int?
+}
+
+private struct ListSearchFixture: View {
+    @ObservedObject var state: ListSearchState
+    let items: [ListItem]
+    let ordered: Bool
+    let matches: [PreviewSearchMatch]
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                ListBlockView(blockLine: 0, items: items, ordered: ordered,
+                              searchMatches: matches, activeMatchID: state.activeID)
+            }
+            .onChange(of: state.activeID) { _, id in
+                guard let match = matches.first(where: { $0.id == id }) else { return }
+                proxy.scrollTo(PreviewListRowID(blockLine: match.blockLine,
+                                               segmentIndex: match.segmentIndex), anchor: .top)
+            }
+        }
+    }
+}
+
 @main
 @MainActor
 enum PreviewDocumentTests {
@@ -36,7 +62,37 @@ enum PreviewDocumentTests {
         precondition(cancelledValue == nil, "cancelled analysis published a value")
 
         try await verifyPreview()
-        print("PreviewDocumentTests: 3 groups passed (background, cancellation, lazy navigation/replacement)")
+        try await verifyLists()
+        print("PreviewDocumentTests: 4 groups passed (background, cancellation, lazy navigation/replacement, list search)")
+    }
+
+    private static func verifyLists() async throws {
+        for ordered in [false, true] {
+            let source = (0..<1000).map {
+                "\(ordered ? "\($0 + 1)." : "-") Row \($0) \([0, 999].contains($0) ? "TARGET" : "café 日本語 👩🏽‍💻")"
+            }.joined(separator: "\n")
+            let blocks = parseBlocks(from: source)
+            guard let block = blocks.first else { preconditionFailure("list fixture did not parse") }
+            let items: [ListItem]
+            switch block.content {
+            case .bulletList(let parsed), .orderedList(let parsed): items = parsed
+            default: preconditionFailure("list fixture produced another block type")
+            }
+            let matches = previewSearchMatches(in: blocks, query: "TARGET")
+            precondition(items.count == 1000 && matches.count == 2)
+            let state = ListSearchState()
+            let host = NSHostingView(rootView: ListSearchFixture(state: state, items: items,
+                                                                ordered: ordered, matches: matches))
+            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 500, height: 300),
+                                  styleMask: [.titled], backing: .buffered, defer: false)
+            window.contentView = host
+            try await settle(host, until: { scroll(in: host)?.documentView?.bounds.height ?? 0 > 10000 })
+            state.activeID = 1
+            try await settle(host, until: { scroll(in: host)?.contentView.bounds.minY ?? 0 > 15000 })
+            state.activeID = 0
+            try await settle(host, until: { scroll(in: host)?.contentView.bounds.minY ?? 1000 < 100 })
+            window.contentView = nil
+        }
     }
 
     private static func verifyPreview() async throws {

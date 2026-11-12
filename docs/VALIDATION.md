@@ -1,16 +1,52 @@
-# Validación de MarkD Beta 9
+# Validación de MarkD Beta 12
 
-Entrega del 2026-10-04: versión 0.2.0, build 9.
+Versión 0.2.0, build 12. La QA funcional de esta versión corresponde al 2026-11-10; la preparación de la copia pública comenzó el 2026-11-12.
 
-## Entorno y comprobaciones
+## Verificaciones de esta copia (2026-11-12)
 
-macOS 27.2 (26B5091g), Xcode 27.0 (27A266a), SDK macOS 27.0, arm64. El mínimo de ejecución declarado es 26.4; no se ejecutó allí.
+Release y Analyze de esta copia terminaron con salida 0 en macOS 27.2.1, Xcode 27.2 (27B52), destino arm64. Las once suites automáticas, los metadatos del bundle y la firma estricta local también pasaron. Estos resultados corresponden a la copia preparada el 2026-11-12; no incluyen un nuevo recorrido UI.
 
-Once suites automáticas más metadatos: **12/12, salida 0**. Parser: 15 casos; búsqueda: 8; Vista previa: 3 grupos; I/O: 6 grupos. Debug/Analyze, Release y QA UI aislada aprobados.
+Las herramientas de empaquetado se prepararon en un entorno aislado con `uv --offline` y `--require-hashes`: Python 3.14, `dmgbuild` 1.6.7, `ds-store` 1.3.3 y `mac-alias` 2.2.3. No se incorporan a la app. La imagen de comprobación, creada fuera del árbol público, pasó empaquetado e integridad, montaje de solo lectura, layout, metadatos, firma y comparación exacta con el Release de esta copia. Se desmontó al terminar. Es evidencia local de la preparación; no se incluye como descarga pública ni sustituye el DMG de la entrega de Beta 12.
 
-Se verificaron análisis fuera del hilo principal, cancelación, invalidación por fuente UTF-8 exacta, navegación distante solicitada durante carga y reemplazo de un documento sin publicar resultados obsoletos. La regresión de navegación pendiente falló antes de corregirse (133) y pasó después (0).
+Gitleaks sobre archivos e historial completo y TruffleHog sobre filesystem e historial terminaron con salida 0, sin hallazgos. La verificación externa de credenciales estuvo desactivada. Semgrep local terminó con salida 0, sin hallazgos ni errores: 77 archivos, incluidos los dos Python del instalador. Swift/Bash tienen cobertura genérica; no es análisis semántico específico de esos lenguajes. El icono PNG preexistente de 1024 px se omitió por tamaño (>1 MB); no cambió en esta preparación.
 
-## Rendimiento observado
+La revisión de privacidad no encontró rutas personales, informes privados ni metadatos locales de Xcode en los 90 archivos publicables. Código, recursos, configuración y pruebas coinciden con Beta 12; el procedimiento de regresión solo cambia su enlace al resumen público. Los hooks normales de Git se conservan y el nuevo estado local se verifica antes de publicar. Los resultados funcionales de las secciones siguientes mantienen sus fechas históricas.
+
+La copia se prepara sin publicar código ni instaladores y sin configurar un remoto. La decisión de destino/publicación sigue pendiente. La licencia MIT y el crédito Andrés Vargas se conservan.
+
+## QA funcional de Beta 12 (2026-11-10)
+
+Entorno: macOS 27.2.1 (26B131), Xcode 27.2 (27B52), SDK macOS 27.2 (26B118), arm64. El mínimo de ejecución declarado es 26.4; no se ejecutó allí.
+
+`script/test_all.sh` pasó once suites con cero fallos. Los metadatos se ejecutaron después por separado, con salida 0. Parser: 15 casos; localización: 4; búsqueda: 8; scroll: 4; documentos de Vista previa: 4 grupos; seguridad del editor: 5; I/O: 6; navegación: 5; Buscar del editor: 5. Temas/apariencia/caché y encabezados accesibles también pasaron.
+
+Release y Analyze terminaron con salida 0. Xcode avisó de destinos arm64/x86_64 coincidentes y seleccionó arm64. La firma local estricta pasó. Esta evidencia no representa una prueba en Intel ni en macOS 26.4.
+
+### Apertura, guardado y versiones
+
+En Beta 11 se reprodujo un fallo al abrir desde la bienvenida: Guardar escribió los bytes nuevos, pero mostró permiso denegado y mantuvo Edited. Abrir un archivo equivalente mediante Archivo > Abrir pasó en la misma carpeta. Guardar como rescató el contenido del caso fallido.
+
+Beta 12 usa el flujo nativo de `NSDocumentController` para Abrir desde la bienvenida. En el Release corregido pasaron tres ciclos de edición/Guardar/Vista previa/RAW/Editar/Undo/Guardar, reapertura desde Recientes y reinicio de la app: diez guardados exactos, con estados de 179 y 204 bytes, sin alerta ni Edited residual. El archivo sintético conservó BOM, CRLF y Unicode. Cancelar Abrir volvió a la bienvenida.
+
+La consulta de versiones nativas encontró cero en el caso fallido, tres en el control nativo y trece en Beta 12. Las versiones legibles de los controles coincidieron por hash con los estados esperados y no tenían conflictos. No se exige una versión por pulsación o guardado; macOS puede agruparlas.
+
+El recorrido aisló y corrigió esta entrada de apertura. Faltan otros documentos y volúmenes; no demuestra que todo error de permisos tenga la misma causa. El [procedimiento de regresión](../Tests/DocumentOpeningRegression.md) es integración UI asistida y no forma parte del runner automático.
+
+### Paquete local
+
+La imagen `MarkD-0.2.0-Beta-12-Installer.dmg` pasó integridad, metadatos, firma local, montaje de solo lectura, layout/fondo y comparación del bundle montado con el Release probado. Se desmontó al terminar y se conservaron las imágenes anteriores.
+
+El layout mantiene la presentación MarkD junto a Aplicaciones aprobada el 2026-11-09. La ronda de Beta 12 comprobó la configuración incrustada; no repitió la inspección visual de Finder de aquella fecha. Firma para pruebas, sin Developer ID ni notarización. No hubo instalación automática.
+
+## Antecedentes de Beta 10 y Beta 11
+
+Beta 10 (2026-10-13) añadió filas de listas bajo demanda. Pasaron búsqueda hasta el último resultado y vuelta en listas sintéticas de 2.000 filas, junto con la regresión de listas. La mediana de pausa UI de la sonda de 1.000 filas pasó de 1.172,54 ms a 40,29 ms, con tres muestras por variante; no mide apertura total de cualquier documento.
+
+La navegación al encabezado final con Reducir movimiento activo pasó en Beta 10. Los controles/encabezados del árbol de accesibilidad tienen evidencia, pero la sesión hablada de VoiceOver sigue pendiente. Los ajustes temporales se restauraron tras la prueba; Beta 12 no volvió a activarlos.
+
+Beta 11 (2026-10-30) comprobó el contraste de selección de Editar/RAW en seis temas, con y sin foco. La corrección usa fondo de selección nativo y texto semántico del sistema. Vista previa mantiene su selección del tema. Son resultados de aquella entrega, no una nueva matriz completa de esta copia.
+
+## Rendimiento histórico de Beta 9 (2026-10-04)
 
 Sonda optimizada en ventana nativa oculta de 800 × 600 puntos, una muestra por tamaño:
 
@@ -22,19 +58,20 @@ Sonda optimizada en ventana nativa oculta de 800 × 600 puntos, una muestra por 
 
 En la última muestra, aproximadamente 1,39 s hasta contenido disponible. Los 67 ms representan la interfaz de carga, no el documento listo. No son garantías del tiempo de apertura ni mediciones del renderizado de todos los bloques.
 
-## Recorridos UI y paquete
+La entrega de Beta 9 pasó once suites más metadatos, Debug/Analyze y Release. Se verificaron análisis fuera del hilo principal, cancelación, invalidación por fuente UTF-8 exacta, navegación distante solicitada durante carga y reemplazo de un documento sin publicar resultados obsoletos. La regresión de navegación pendiente falló antes de corregirse (133) y pasó después (0).
 
-Release aislado y libro sintético de 2.759.890 bytes: Vista previa, desplazamiento, búsqueda entre capítulos lejanos, 36.000 coincidencias con navegación circular, edición, Undo y guardado con bytes exactos.
+El recorrido UI aislado usó un libro sintético de 2.759.890 bytes: Vista previa, desplazamiento, búsqueda entre capítulos lejanos, 36.000 coincidencias con navegación circular, edición, Undo y guardado con bytes exactos. Encabezados del árbol de accesibilidad y Buscar nativo en RAW pasaron; no equivalen a VoiceOver hablado.
 
-Se comprobaron encabezados en el árbol de accesibilidad y Buscar nativo en RAW. No equivale a una sesión hablada de VoiceOver.
+El DMG local de Beta 9 también pasó integridad, firma, metadatos, montaje de solo lectura, comparación con Release y enlace a Aplicaciones. SHA-256 de aquella imagen: `d15b102898995fe4f4f7f68d8a95e0b6994a452a4d7bd8c0bc2e67906dc220a2`.
 
-El DMG local pasó integridad, firma local, metadatos, montaje de solo lectura, comparación con Release y enlace a Aplicaciones. SHA-256 de Beta 9: `d15b102898995fe4f4f7f68d8a95e0b6994a452a4d7bd8c0bc2e67906dc220a2`. Firma para pruebas, sin Developer ID ni notarización.
+Las capturas del README proceden de Beta 9 y un documento sintético pequeño, preparadas el 2026-10-12. Se conservan con ese rótulo; no repiten la QA ni prueban la apariencia actual en toda la matriz.
 
-## Límites abiertos
+## Límites abiertos antes de RC1
 
-- Recuperación anterior al guardado/autosave: un cierre forzado a los 7,325 s de una edición restauró el original. La recuperación después de confirmar autosave sí pasó. No se cambió su programación nativa.
+- Recuperación anterior al guardado/autosave: un cierre forzado a los 7,325 s de una edición restauró el original. La recuperación después de confirmar autosave sí pasó. No se cambió su programación nativa ni se garantiza recuperar cada pulsación.
 - Sincronización visual inmediata de escrituras externas directas.
-- Archivos reales de uso, listas/bloques únicos enormes, edición sostenida y memoria/Leaks.
-- VoiceOver hablado, Reducir movimiento activo, runtime macOS 26.4, matriz visual e instalación/actualización preservando documentos y ajustes.
+- Párrafos/código individuales enormes, edición sostenida y memoria/Leaks.
+- VoiceOver hablado, runtime macOS 26.4, altura mínima/matriz visual restante y actualización instalada preservando documentos y ajustes.
+- Seguimiento del guardado con otros documentos/volúmenes y uso diario. La corrección de Beta 12 cubre el caso controlado descrito arriba.
 
-Las capturas añadidas a la propuesta del README el 2026-10-12 proceden de Beta 9 y un documento sintético pequeño; no repiten toda la QA ni cierran estos pendientes.
+Los resultados no declaran RC1 ni 1.0 estable. Hace falta evaluar una mitigación o aceptar expresamente el límite anterior al autosave antes de aprobar la candidata.

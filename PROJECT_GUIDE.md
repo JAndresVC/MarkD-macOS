@@ -1,6 +1,6 @@
-# MarkD — guía del proyecto
+# MarkD: guía del proyecto
 
-Estado técnico: MarkD 0.2.0 Beta 9 (build 9), entrega del 2026-10-04. Esta guía conserva la arquitectura y los límites comprobados; los resultados se resumen en [docs/VALIDATION.md](docs/VALIDATION.md).
+Estado técnico: MarkD 0.2.0 Beta 12 (build 12), entrega funcional del 2026-11-10. La preparación de esta copia comenzó el 2026-11-12. [docs/VALIDATION.md](docs/VALIDATION.md) distingue la QA funcional de las verificaciones de la copia pública.
 
 ## Objetivo y alcance
 
@@ -8,23 +8,24 @@ Lector y editor Markdown nativo para macOS, con lectura cómoda, edición predec
 
 ## Arquitectura
 
-- Proyecto y esquema: `MarkD.xcodeproj`, MarkD. Mínimo declarado macOS 26.4; la ejecución allí sigue pendiente. Beta actual compilada con Xcode 27/SDK macOS 27.
-- SwiftUI y AppKit, sin dependencias externas, WebView ni servicios de red.
+- Proyecto y esquema: `MarkD.xcodeproj`, MarkD. Mínimo declarado macOS 26.4; la ejecución allí sigue pendiente. Beta 12 se verificó con Xcode 27.2 y SDK macOS 27.2.
+- SwiftUI y AppKit, sin dependencias externas de ejecución, WebView ni servicios de red. Las herramientas aisladas de empaquetado son dependencias de desarrollo.
 - `FileDocument` y `DocumentGroup` gestionan lectura, guardado, autosave, conflictos y ventanas. La migración a otra API de documentos permanece aplazada.
 - UTF-8 estricto, conservando BOM, Unicode y saltos de línea. Bytes inválidos producen error; no hay reparación ni conversión automática de otras codificaciones.
 - Parser/esquema ignoran solamente el BOM inicial en su copia de análisis. El editor y los bytes guardados lo conservan.
 - Un `NSTextView` permanece vivo entre Editar, Vista previa y RAW. Conservar selección, foco, posición y Undo. RAW permite seleccionar, copiar y buscar, sin edición.
 - `NavigationSplitView` muestra esquema de encabezados y contenido. Navegación del editor por offsets UTF-16, incluidos LF/CRLF/CR y Unicode compuesto.
 - Vista previa usa `LazyVStack` y prepara parser/esquema fuera del hilo de UI. Las tareas canceladas no publican snapshots antiguos; el parser comprueba cancelación entre líneas.
+- Desde Beta 10, las filas de listas también se construyen bajo demanda. Buscar materializa primero el bloque y después la fila distante mediante una petición protegida por la fuente, consulta y resultado actuales. Conservar las dos etapas para encontrar filas aún no construidas.
 - `MarkdownSource` distingue bytes UTF-8 exactos. Cachés acotadas por instancia; cambiar resultado activo, foco o tema no debe repetir el parser.
-- Buscar en Vista previa materializa bloques distantes antes de obtener la geometría de `Text.LayoutKey`. Conservar selección, enlaces y accesibilidad; no sustituir la coincidencia precisa por centrado del bloque.
+- Buscar en Vista previa usa la geometría de `Text.LayoutKey` para revelar la coincidencia precisa. Conservar selección, enlaces y accesibilidad; no sustituirla por centrado del bloque.
 - La búsqueda Unicode cubre el carácter visible completo y evita duplicados dentro de caracteres compuestos.
-- Una solicitud de navegación durante carga espera a los bloques. La navegación del esquema consulta Reducir movimiento; la prueba con la preferencia global activa sigue pendiente.
+- Una solicitud de navegación durante carga espera a los bloques. La navegación del esquema consulta Reducir movimiento; el recorrido al encabezado final con la preferencia activa pasó en Beta 10.
 - Buscar en Editar/RAW se dirige al editor de la ventana activa incluso sin foco inicial y no actúa sobre documentos con una hoja modal.
-- Temas y apariencia de ventana se propagan a todas las escenas. No aplicar la configuración de toolbar de documentos a Ajustes.
+- Temas y apariencia de ventana se propagan a todas las escenas. Desde Beta 11, Editar/RAW conservan el fondo nativo de selección y texto semántico legible con y sin foco. La selección de Vista previa mantiene los colores del tema. No aplicar la configuración de toolbar de documentos a Ajustes.
 - Selector de modos: pestañas nativas en macOS 27 con compilador compatible; alternativa segmentada anterior. Conservar las guardas de compilador/disponibilidad.
 - Por debajo de 780 puntos, usar el menú compacto rotulado. La ventana de documento tiene mínimo de 560 × 360 puntos; conservar la restricción de tamaño y comprobarla antes de modificarla.
-- Bienvenida: nuevo documento, abrir, guía localizada y recientes nativos. No duplicar documentos ya abiertos.
+- Bienvenida: nuevo documento, abrir, guía localizada y recientes nativos. Desde Beta 12, el botón Abrir invoca `NSDocumentController.shared.openDocument(nil)`, igual que Archivo > Abrir. AppKit conserva el acceso necesario durante la vida del documento. Cancelar mantiene la bienvenida; abrir un documento la oculta. No duplicar documentos ya abiertos.
 
 ## Archivos principales
 
@@ -46,6 +47,8 @@ Lector y editor Markdown nativo para macOS, con lectura cómoda, edición predec
 | `MarkD/WelcomeView.swift` | Bienvenida y acciones de documentos |
 | `MarkD/AppIdentity.swift` | Nombre y versión visible |
 | `script/` | Compilación, pruebas y empaquetado |
+| `script/dmg/` | Layout, fondo reproducible y requisitos del instalador |
+| `script/test_dmg_layout.py` | Integración sobre el DMG montado |
 | `Tests/` | Regresiones funcionales y sondas UI |
 
 ## Compilar y probar
@@ -59,7 +62,7 @@ Desde la raíz:
 
 El iniciador no cierra una app ya abierta. `script/build_and_run.sh` es la entrada de recompilación: solicita cierre normal y espera la resolución de documentos sin guardar; no fuerza el cierre.
 
-El runner conserva logs y códigos reales por suite, continúa después de fallos y termina con salida no cero si alguna suite falla. La ruta opcional a un bundle añade metadatos. Benchmarks y pruebas UI se ejecutan por separado.
+El runner ejecuta once suites, conserva logs y códigos reales, continúa después de fallos y termina con salida no cero si alguna suite falla. La ruta opcional a un bundle añade metadatos. Benchmarks y pruebas UI se ejecutan por separado.
 
 ```bash
 ./script/benchmark_large_document.sh
@@ -67,21 +70,38 @@ El runner conserva logs y códigos reales por suite, continúa después de fallo
 ./script/test_bundle_metadata.sh /ruta/a/MarkD.app
 ```
 
-Los scripts seleccionan Xcode en Aplicaciones y admiten `DEVELOPER_DIR`. Las pruebas UI necesitan permisos de Accesibilidad y una app de QA aislada; no usar documentos privados ni terminar procesos de uso personal.
+Los scripts seleccionan Xcode en Aplicaciones y admiten `DEVELOPER_DIR`. Las pruebas UI necesitan permisos de Accesibilidad y una app de QA aislada; no usar documentos privados ni terminar procesos de uso personal. La [regresión de apertura y guardado](Tests/DocumentOpeningRegression.md) requiere comprobar bytes, alertas y estado Edited; escribir bytes en disco no basta para aprobar un guardado que muestra error.
 
 ## Paquetes locales
 
-`script/package_dmg.sh` compila Release, exige SDK 27 o posterior, verifica metadatos/icono/firma e integridad y no sobrescribe DMG existentes. Acepta otra ruta de salida libre como primer argumento.
+Con `uv` disponible, preparar las herramientas desde la raíz:
 
-Cada entrega que modifique la app o corrija errores debe incrementar beta/build y entregar un DMG local validado, conservando los anteriores. Una edición documental no requiere otra beta. Este flujo no autoriza instalación automática, cambios adicionales de firma/entitlements ni publicación de instaladores.
+```bash
+uv venv .build/dmg-tools
+uv pip install --python .build/dmg-tools/bin/python --require-hashes -r script/dmg/requirements.txt
+./script/package_dmg.sh
+```
+
+El resultado es `dist/MarkD-0.2.0-Beta-12-Installer.dmg`. El script compila Release, exige SDK 27 o posterior, verifica metadatos/icono/firma e integridad y no sobrescribe DMG existentes. Acepta otra ruta de salida libre como primer argumento. `dmgbuild` 1.6.7, `ds-store` 1.3.3 y `mac-alias` 2.2.3 tienen versiones/hashes fijados en `script/dmg/requirements.txt`; solo se usan para desarrollo.
+
+El layout nativo muestra MarkD y Aplicaciones sobre fondo claro. Su configuración y fondo viven en `script/dmg/`; no cambia preferencias globales de Finder. Después de montar la imagen en solo lectura, comprobarla con:
+
+```bash
+.build/dmg-tools/bin/python script/test_dmg_layout.py '/Volumes/Instalar MarkD'
+```
+
+`MARKD_APP_PATH` permite reempaquetar un bundle ya validado sin recompilar; conserva los controles y exige una ruta de salida libre. Comparar la app montada con el original y desmontar al terminar. El test de layout no instala ni ejecuta MarkD.
+
+Cada entrega que modifique la app o corrija errores debe incrementar beta/build y entregar un DMG local validado, conservando los anteriores. Una edición documental o exportación del mismo código no requiere otra beta. Este flujo no autoriza instalación automática, cambios adicionales de firma/entitlements ni publicación de instaladores.
 
 ## Límites abiertos
 
 - **Pérdida de edición anterior al guardado/autosave:** comprobada al terminar el proceso antes de persistir los bytes. Guardar con ⌘S y comprobar que termine para un cambio importante. No prometer recuperación de cada pulsación.
 - Escrituras externas directas pueden mantener la vista antigua hasta resolver el conflicto nativo. Las pruebas de escritura coordinada no prueban sincronización en vivo con todos los editores.
-- Falta completar matriz visual de seis temas, tres modos, tamaños y cuatro idiomas.
-- Archivos reales de uso, bloques únicos/listas enormes, edición sostenida y memoria/Leaks necesitan más cobertura.
-- VoiceOver hablado, Reducir movimiento activo, macOS 26.4 e instalación/actualización real siguen pendientes.
+- Falta completar matriz visual de seis temas, tres modos, tamaños y cuatro idiomas. El ancho compacto de 560 puntos tiene evidencia previa; la altura mínima y los cruces restantes siguen pendientes.
+- Párrafos/código individuales enormes, edición sostenida y memoria/Leaks necesitan más cobertura. Las filas de listas grandes tienen la corrección bajo demanda de Beta 10.
+- QA-12 está corregido para el recorrido de apertura de bienvenida reproducido. Faltan más documentos/volúmenes y comprobar la actualización instalada y el uso diario.
+- VoiceOver hablado y runtime macOS 26.4 siguen pendientes. La prueba parcial con Reducir movimiento activo no aprueba toda la accesibilidad.
 - Tablas, imágenes, tareas, notas al pie, filtrado del esquema y tema automático son propuestas; no figuran como implementados.
 - iPhone/iPad y distribución pública de binarios quedan fuera del alcance de estabilización actual.
 
@@ -89,12 +109,15 @@ Cada entrega que modifique la app o corrija errores debe incrementar beta/build 
 
 | Etapa | Criterio |
 | --- | --- |
-| Beta 9 — entregada | Renderizado bajo demanda y análisis asíncrono; regresiones, QA sintética y DMG local aprobados |
-| Beta 10 — propuesta | Archivos reales, accesibilidad activa, matriz visual, compatibilidad e instalación; ampliar perfil de memoria si hace falta |
-| RC1 | Congelar funciones y usar durante 7–14 días; sin bugs críticos ni pérdida de contenido cuyo guardado/autosave había terminado |
+| Beta 9 entregada | Bloques bajo demanda y análisis asíncrono; regresiones y QA sintética |
+| Beta 10 entregada | Filas de listas bajo demanda, búsqueda distante y recorridos seleccionados de interfaz/accesibilidad |
+| Beta 11 entregada | Contraste de selección con y sin foco en Editar/RAW |
+| Beta 12 entregada | Apertura nativa desde bienvenida, guardados/Undo, Recientes/reinicio y versiones exactas en el caso controlado |
+| Cierre de estabilización | Validar actualización instalada, uso diario, otros documentos/volúmenes, runtime 26.4 y matriz restante; completar VoiceOver cuando se retome su prueba y evaluar recuperación anterior al autosave |
+| RC1 | Congelar funciones y usar durante 7 a 14 días; sin bugs críticos ni pérdida de contenido cuyo guardado/autosave había terminado |
 | 1.0 local | Cumplir los criterios y aceptar la candidata; no implica por sí mismo un instalador público notarizado |
 
-Antes de RC1 debe evaluarse una mitigación o aceptar expresamente el límite anterior al autosave. El roadmap no garantiza número de betas/fechas ni autoriza nuevas funcionalidades.
+Antes de RC1 debe evaluarse una mitigación o aceptar expresamente el límite anterior al autosave. La siguiente corrección de app requeriría Beta 13. El roadmap no garantiza número de betas/fechas ni autoriza nuevas funcionalidades.
 
 ## Reglas de colaboración y relevo
 
@@ -115,10 +138,12 @@ Al detener una tarea, registrar objetivo, cambios, pruebas con códigos reales, 
 
 El bundle sigue siendo `com.Andres.MarkD`: cambiarlo afectaría ajustes y gestión de documentos. Autor: Andrés Vargas. Código bajo [MIT](LICENSE).
 
-## Preparación de publicación — 2026-10-12
+## Preparación de publicación (2026-11-12)
 
-Se aprobó la documentación de esta copia y la creación de un historial Git local separado, con MIT, Andrés Vargas y correo privado de GitHub. El historial del repositorio de trabajo anterior se conserva por separado; no se importa a esta copia. El código, pruebas, scripts y recursos de Beta 9 permanecen idénticos.
+Esta copia conserva el historial público separado, MIT, el crédito Andrés Vargas y correo privado de GitHub. No incorpora el historial del repositorio de trabajo ni configura un remoto. El objetivo de esta preparación es reunir el código de Beta 12 con documentación apta para publicar; no añade funciones a la app ni requiere Beta 13 por los cambios documentales.
 
-Esta preparación no publica código ni instaladores y no configura un remoto. Antes de publicar, verificar el estado final con Gitleaks, TruffleHog y las reglas locales de Semgrep, incluidos los commits nuevos; conservar los hooks existentes. La cobertura genérica de Semgrep no sustituye una revisión específica de Swift.
+Los controles locales de archivos e historial con Gitleaks y TruffleHog terminaron con salida 0 y sin hallazgos. Semgrep terminó con salida 0, sin hallazgos/errores, sobre 77 archivos; su cobertura de Swift/Bash es genérica. Release/Analyze, once suites, metadatos, firma local y empaquetado de comprobación de esta copia también pasaron. El identificador del estado local revisado se consulta con `git rev-parse HEAD`; el historial usa únicamente la identidad noreply aprobada. Resultados en [docs/VALIDATION.md](docs/VALIDATION.md), separados de la QA funcional del 2026-11-10.
 
-El siguiente paso de publicación requiere decidir destino/nombre y autorizar su creación o cambio de visibilidad. Beta 10 continúa como propuesta para completar pruebas reales, accesibilidad, compatibilidad e instalación; el límite anterior al autosave sigue abierto. No corresponde otro DMG por esta preparación documental.
+Antes de publicar, verificar el estado final con Gitleaks, TruffleHog y las reglas locales de Semgrep, incluidos los commits nuevos; conservar los hooks existentes. La cobertura genérica de Semgrep no sustituye una revisión específica de Swift.
+
+Publicar requiere decidir destino/nombre y autorizar la creación del repositorio o el cambio de visibilidad. La publicación del código como beta y la distribución de una app notarizada son decisiones separadas.
