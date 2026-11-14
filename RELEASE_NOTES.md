@@ -1,3 +1,14 @@
+# MarkD 0.2.0 Beta 13 (build 13)
+
+Entrega funcional del 2026-11-14, comprobada en macOS 27.2.1 con Xcode 27.2 y SDK 27.2.
+
+- Autoguardado periódico nativo con mínimo de un segundo, configurado después del arranque de SwiftUI. Tres muestras por variante dieron medianas de 15,037 s en el control y 1,058 s con la configuración corta, desde iniciar el pegado hasta observar bytes exactos.
+- En un cierre programado a los ocho segundos, la variante corta recuperó la línea que perdió el control. El Release final restauró un archivo existente y un documento nuevo sin ruta con contenidos independientes y exactos.
+- Undo/Redo, modos, once suites y Release/Analyze aprobados. Un libro sintético de 4,83 MB autoguardó en 4,266 s; Vista previa, búsqueda al capítulo final y Undo/guardar conservaron los bytes esperados.
+- El intervalo configurado no garantiza la finalización de la escritura en un segundo ni la recuperación de cada pulsación. macOS 26.4 sigue como mínimo técnico, con ejecución sin validar por falta de entorno de prueba.
+
+El paquete local se genera como `MarkD-0.2.0-Beta-13-Installer.dmg`. Conserva el diseño de MarkD junto a Aplicaciones. Su integridad, layout, solo lectura, metadatos, firma local y payload exacto pasaron. La publicación de este código no distribuye un instalador notarizado. [Validación](docs/VALIDATION.md).
+
 # MarkD 0.2.0 Beta 12 (build 12)
 
 Entrega funcional del 2026-11-10, comprobada en macOS 27.2.1 con Xcode 27.2 y SDK macOS 27.2.

@@ -1,4 +1,36 @@
-# Validación de MarkD Beta 12
+# Validación de MarkD Beta 13
+
+Versión 0.2.0, build 13. QA funcional del 2026-11-14 en macOS 27.2.1 (26B131), Xcode 27.2 (27B52), SDK 27.2, arm64.
+
+## Beta 13 y actualización del código público (2026-11-14)
+
+Esta copia incorpora los mismos archivos de código, recursos, proyecto, scripts y pruebas de la entrega local Beta 13. El procedimiento manual adapta sus enlaces a este resumen público. La documentación pública conserva su alcance y fechas. Las pruebas funcionales y del instalador descritas aquí proceden de la entrega local; la transferencia del mismo código no representa un nuevo recorrido UI ni otra beta.
+
+El control conservó `autosavingDelay = 0` y SwiftUI realizó sus autoguardados habituales. La variante corta configuró un segundo después de crear el controlador SwiftUI. Un observador iniciado antes de pegar comprobó bytes cada 20 ms. Tiempos desde iniciar el pegado hasta observar los bytes exactos, con tres muestras por variante.
+
+| Variante | Muestras, segundos | Mediana |
+| --- | --- | --- |
+| Control | 15,136 / 15,035 / 15,037 | 15,037 s |
+| Un segundo | 1,118 / 1,049 / 1,058 | 1,058 s |
+
+Con cierre SIGKILL programado a los 8,071 s, el control perdió la última línea; la variante corta recuperó el contenido exacto. La primera sonda consultaba el controlador desde `App.init` y falló al arrancar antes de la preparación de SwiftUI. Se retiró esa consulta temprana. La app de entrega configura el intervalo desde `applicationDidFinishLaunching`.
+
+El Release final pasó arranque, restauración, Undo/Redo y cambios de modo. Una edición Unicode llegó al disco en 1,136 s. Otro cierre a los 8,058 s conservó un archivo existente y el autosave de un documento nuevo sin ruta; ambas ventanas se restauraron y el primer guardado del nuevo fue exacto. Los cierres se limitaron a una copia QA con identidad independiente y ejecutable idéntico al Release al comparar copias sin firma.
+
+Libro sintético de 4.830.318 bytes: edición/autoguardado en 4,266 s, Vista previa, búsqueda al capítulo 1399 y Undo/guardar exactos. No es un perfil de edición sostenida, memoria o energía. El tiempo superior al intervalo configurado confirma que no hay un plazo garantizado de escritura.
+
+Once suites, cero fallos; Release/Analyze, metadatos y firma local aprobados. El DMG local pasó integridad, layout/fondo, solo lectura y comparación exacta del payload con Release; desmontado. Son comprobaciones de una entrega local; el repositorio publica código fuente.
+
+La ejecución en macOS 26.4 queda aplazada por falta de un entorno de prueba. Se mantiene el mínimo técnico declarado y se documenta esa cobertura sin validar. La estabilización local se evalúa en macOS 27.2.1. VoiceOver hablado, matriz visual restante, validación de Beta 13 instalada y uso diario continúan pendientes. El riesgo residual de perder cambios antes de persistir no se considera aceptado ni resuelto.
+
+## Controles de la copia pública actualizada (2026-11-14)
+
+Los archivos técnicos coinciden byte por byte con la entrega validada de Beta 13. El árbol conserva 90 archivos y no incorpora informes privados, rutas personales, compilaciones, instaladores ni historia del repositorio privado. No se repitieron build o suites para transferir el mismo código.
+
+Gitleaks archivos/historial y TruffleHog filesystem/historial terminaron 0, sin hallazgos. Verificación externa de credenciales desactivada. Semgrep local terminó 0, con 77 archivos, cero hallazgos/errores y cobertura genérica Swift/Bash; el icono preexistente de más de 1 MB se omitió por tamaño. Se conservan los hooks normales de commit/push para los commits de esta actualización.
+
+## Antecedentes de Beta 12
+
 
 Versión 0.2.0, build 12. La QA funcional de esta versión corresponde al 2026-11-10; la preparación de la copia pública comenzó el 2026-11-12.
 
@@ -66,12 +98,12 @@ El DMG local de Beta 9 también pasó integridad, firma, metadatos, montaje de s
 
 Las capturas del README proceden de Beta 9 y un documento sintético pequeño, preparadas el 2026-10-12. Se conservan con ese rótulo; no repiten la QA ni prueban la apariencia actual en toda la matriz.
 
-## Límites abiertos antes de RC1
+## Límites registrados en Beta 12 antes de RC1
 
 - Recuperación anterior al guardado/autosave: un cierre forzado a los 7,325 s de una edición restauró el original. La recuperación después de confirmar autosave sí pasó. No se cambió su programación nativa ni se garantiza recuperar cada pulsación.
 - Sincronización visual inmediata de escrituras externas directas.
 - Párrafos/código individuales enormes, edición sostenida y memoria/Leaks.
-- VoiceOver hablado, runtime macOS 26.4, altura mínima/matriz visual restante y actualización instalada preservando documentos y ajustes.
+- VoiceOver hablado, altura mínima/matriz visual restante y actualización instalada preservando documentos y ajustes. La ejecución en macOS 26.4 está aplazada por falta de entorno.
 - Seguimiento del guardado con otros documentos/volúmenes y uso diario. La corrección de Beta 12 cubre el caso controlado descrito arriba.
 
 Los resultados no declaran RC1 ni 1.0 estable. Hace falta evaluar una mitigación o aceptar expresamente el límite anterior al autosave antes de aprobar la candidata.

@@ -3,6 +3,7 @@ import AppKit
 
 @main
 struct MarkDApp: App {
+    @NSApplicationDelegateAdaptor(MarkDAppDelegate.self) private var appDelegate
     @AppStorage("appLanguage") private var storedLanguage = AppLanguage.system.rawValue
 
     var body: some Scene {
@@ -40,6 +41,13 @@ struct MarkDApp: App {
                 SettingsView()
             }
         }
+    }
+}
+
+final class MarkDAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // SwiftUI must create its document controller before configuring periodic autosaving.
+        NSDocumentController.shared.autosavingDelay = 1
     }
 }
 

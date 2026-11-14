@@ -46,8 +46,8 @@ if [[ "$icon_name" != "AppIcon" || ! -f "$app_path/Contents/Resources/AppIcon.ic
     exit 1
 fi
 
-if [[ "$short_version" != "0.2.0" || "$build_version" != "12" || "$release_channel" != "Beta 12" ]]; then
-    print -u2 "FAIL: expected MarkD 0.2.0 Beta 12 (build 12), found $short_version $release_channel (build $build_version)"
+if [[ "$short_version" != "0.2.0" || "$build_version" != "13" || "$release_channel" != "Beta 13" ]]; then
+    print -u2 "FAIL: expected MarkD 0.2.0 Beta 13 (build 13), found $short_version $release_channel (build $build_version)"
     exit 1
 fi
 

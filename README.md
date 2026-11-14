@@ -2,7 +2,7 @@
 
 Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para macOS, construido con SwiftUI y AppKit.
 
-**Estado: 0.2.0 Beta 12.** Proyecto en desarrollo; todavía no es una versión estable. Se compila desde el código y no ofrece un instalador público notarizado.
+**Estado: 0.2.0 Beta 13.** Proyecto en desarrollo; todavía no es una versión estable. Se compila desde el código y no ofrece un instalador público notarizado.
 
 ![Markdown con formato en Vista previa](docs/screenshots/preview.jpg)
 
@@ -18,7 +18,7 @@ Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para m
 
 ![Edición del documento de ejemplo](docs/screenshots/editor.jpg)
 
-Las capturas corresponden a Beta 9 y usan un documento sintético; no muestran archivos personales ni representan una nueva prueba de Beta 12.
+Las capturas corresponden a Beta 9 y usan un documento sintético; no muestran archivos personales ni representan una nueva prueba de Beta 13.
 
 ## Markdown y archivos
 
@@ -28,12 +28,14 @@ La Vista previa admite encabezados ATX y Setext, párrafos, citas, listas básic
 
 El editor y la Vista previa usan componentes nativos, sin WebView ni servicios de red. Beta 10 añadió filas de listas bajo demanda; Beta 11 corrigió el contraste de selección sin foco en Editar/RAW. En Beta 12, Abrir desde la bienvenida usa el flujo nativo de documentos para conservar el acceso necesario al guardar y preservar versiones.
 
+Beta 13 activa el autoguardado periódico nativo con mínimo de un segundo después del arranque. La comparación sintética observó una mediana de 15,037 s en el control y 1,058 s con la configuración corta. El tiempo depende del documento y del sistema, y pueden perderse ediciones aún no persistidas.
+
 ## Requisitos
 
 - macOS 26.4 o posterior como mínimo declarado por el proyecto.
 - Xcode 27 con SDK macOS 27 para compilar la beta actual.
 
-La QA funcional de Beta 12 del 2026-11-10 se ejecutó en macOS 27.2.1, Xcode 27.2 y SDK macOS 27.2 sobre Apple Silicon. **La ejecución en macOS 26.4 sigue pendiente**: el mínimo declarado no equivale a una prueba de compatibilidad completada.
+La QA funcional de Beta 13 del 2026-11-14 se ejecutó en macOS 27.2.1, Xcode 27.2 y SDK macOS 27.2 sobre Apple Silicon. **La ejecución en macOS 26.4 no está validada** y queda aplazada por falta de un entorno de prueba. El mínimo declarado se conserva; la estabilización local se evalúa en el entorno disponible.
 
 ## Compilar y abrir
 
@@ -69,7 +71,7 @@ Esta entrada solicita el cierre normal de MarkD antes de recompilar y cancela la
 - **Una edición puede perderse si la app termina antes de completar un guardado o autosave.** Para persistir un cambio importante, usa ⌘S y comprueba que termine. La recuperación posterior al autosave pasó las pruebas; no se garantiza recuperar cada pulsación.
 - Una escritura externa directa puede dejar visible el texto anterior hasta resolver el conflicto nativo al guardar.
 - Párrafos y bloques de código individuales enormes aún pueden causar pausas. Hace falta ampliar la cobertura de edición sostenida y memoria/Leaks.
-- La corrección de permisos de Beta 12 pasó los recorridos controlados de apertura/guardado; faltan más documentos y volúmenes, además de comprobar la actualización instalada y el uso diario.
+- La corrección de permisos de Beta 12 pasó los recorridos controlados de apertura/guardado; faltan más documentos y volúmenes, además de comprobar Beta 13 instalada y el uso diario.
 - VoiceOver hablado y la matriz visual completa siguen pendientes. La navegación al encabezado final con Reducir movimiento activo se comprobó en Beta 10; esa prueba no cierra toda la validación de accesibilidad.
 
 Resultados, fechas y límites: [Validación](docs/VALIDATION.md). Próximas etapas: [guía del proyecto](PROJECT_GUIDE.md).
@@ -86,7 +88,7 @@ Ejecuta once suites y conserva resultados por suite. Para añadir la comprobaci�
 ./script/test_all.sh /ruta/a/MarkD.app
 ```
 
-Los benchmarks y recorridos UI se ejecutan por separado. La [regresión de apertura y guardado](Tests/DocumentOpeningRegression.md) describe el recorrido asistido de Beta 12 y no forma parte del total automático.
+Los benchmarks y recorridos UI se ejecutan por separado. La [regresión de apertura y guardado](Tests/DocumentOpeningRegression.md) describe los recorridos asistidos de guardado y recuperación y no forma parte del total automático.
 
 ## Empaquetado local
 
@@ -98,7 +100,7 @@ uv pip install --python .build/dmg-tools/bin/python --require-hashes -r script/d
 ./script/package_dmg.sh
 ```
 
-Genera `dist/MarkD-0.2.0-Beta-12-Installer.dmg`, con MarkD a la izquierda y Aplicaciones a la derecha. Valida la app y la imagen, y rechaza sobrescribir un archivo existente. Admite otra ruta de salida libre como primer argumento.
+Genera `dist/MarkD-0.2.0-Beta-13-Installer.dmg`, con MarkD a la izquierda y Aplicaciones a la derecha. Valida la app y la imagen, y rechaza sobrescribir un archivo existente. Admite otra ruta de salida libre como primer argumento.
 
 Las herramientas del instalador tienen versiones y hashes fijados; no se incorporan a la app. Los paquetes usan firma local para pruebas y no son una distribución pública notarizada. Compilaciones y DMG se excluyen de Git.
 

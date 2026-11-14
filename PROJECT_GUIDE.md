@@ -1,6 +1,6 @@
 # MarkD: guía del proyecto
 
-Estado técnico: MarkD 0.2.0 Beta 12 (build 12), entrega funcional del 2026-11-10. La preparación de esta copia comenzó el 2026-11-12. [docs/VALIDATION.md](docs/VALIDATION.md) distingue la QA funcional de las verificaciones de la copia pública.
+Estado técnico: MarkD 0.2.0 Beta 13 (build 13), entrega funcional del 2026-11-14. La copia pública comenzó con Beta 12 y se actualiza con el mismo código técnico de la entrega Beta 13. [docs/VALIDATION.md](docs/VALIDATION.md) distingue la QA funcional de las verificaciones de la copia pública.
 
 ## Objetivo y alcance
 
@@ -8,8 +8,9 @@ Lector y editor Markdown nativo para macOS, con lectura cómoda, edición predec
 
 ## Arquitectura
 
-- Proyecto y esquema: `MarkD.xcodeproj`, MarkD. Mínimo declarado macOS 26.4; la ejecución allí sigue pendiente. Beta 12 se verificó con Xcode 27.2 y SDK macOS 27.2.
+- Proyecto y esquema: `MarkD.xcodeproj`, MarkD. Mínimo declarado macOS 26.4; su ejecución está sin validar y aplazada por falta de entorno. La estabilización local se evalúa en macOS 27.2.1. Beta 13 se verificó con Xcode 27.2 y SDK macOS 27.2.
 - SwiftUI y AppKit, sin dependencias externas de ejecución, WebView ni servicios de red. Las herramientas aisladas de empaquetado son dependencias de desarrollo.
+- `MarkDAppDelegate.applicationDidFinishLaunching` configura `NSDocumentController.shared.autosavingDelay = 1`. SwiftUI debe crear antes su controlador; consultar el singleton desde `App.init` hizo fallar el arranque de una sonda experimental. Conservar este punto del ciclo de vida. Es una espera mínima, sin garantía de escritura inmediata.
 - `FileDocument` y `DocumentGroup` gestionan lectura, guardado, autosave, conflictos y ventanas. La migración a otra API de documentos permanece aplazada.
 - UTF-8 estricto, conservando BOM, Unicode y saltos de línea. Bytes inválidos producen error; no hay reparación ni conversión automática de otras codificaciones.
 - Parser/esquema ignoran solamente el BOM inicial en su copia de análisis. El editor y los bytes guardados lo conservan.
@@ -82,7 +83,7 @@ uv pip install --python .build/dmg-tools/bin/python --require-hashes -r script/d
 ./script/package_dmg.sh
 ```
 
-El resultado es `dist/MarkD-0.2.0-Beta-12-Installer.dmg`. El script compila Release, exige SDK 27 o posterior, verifica metadatos/icono/firma e integridad y no sobrescribe DMG existentes. Acepta otra ruta de salida libre como primer argumento. `dmgbuild` 1.6.7, `ds-store` 1.3.3 y `mac-alias` 2.2.3 tienen versiones/hashes fijados en `script/dmg/requirements.txt`; solo se usan para desarrollo.
+El resultado es `dist/MarkD-0.2.0-Beta-13-Installer.dmg`. El script compila Release, exige SDK 27 o posterior, verifica metadatos/icono/firma e integridad y no sobrescribe DMG existentes. Acepta otra ruta de salida libre como primer argumento. `dmgbuild` 1.6.7, `ds-store` 1.3.3 y `mac-alias` 2.2.3 tienen versiones/hashes fijados en `script/dmg/requirements.txt`; solo se usan para desarrollo.
 
 El layout nativo muestra MarkD y Aplicaciones sobre fondo claro. Su configuración y fondo viven en `script/dmg/`; no cambia preferencias globales de Finder. Después de montar la imagen en solo lectura, comprobarla con:
 
@@ -101,7 +102,7 @@ Cada entrega que modifique la app o corrija errores debe incrementar beta/build 
 - Falta completar matriz visual de seis temas, tres modos, tamaños y cuatro idiomas. El ancho compacto de 560 puntos tiene evidencia previa; la altura mínima y los cruces restantes siguen pendientes.
 - Párrafos/código individuales enormes, edición sostenida y memoria/Leaks necesitan más cobertura. Las filas de listas grandes tienen la corrección bajo demanda de Beta 10.
 - QA-12 está corregido para el recorrido de apertura de bienvenida reproducido. Faltan más documentos/volúmenes y comprobar la actualización instalada y el uso diario.
-- VoiceOver hablado y runtime macOS 26.4 siguen pendientes. La prueba parcial con Reducir movimiento activo no aprueba toda la accesibilidad.
+- VoiceOver hablado permanece aplazado. La ejecución en macOS 26.4 queda sin validar por falta de entorno y no bloquea por sí sola la estabilización local en macOS 27.2.1. La prueba parcial con Reducir movimiento activo no aprueba toda la accesibilidad.
 - Tablas, imágenes, tareas, notas al pie, filtrado del esquema y tema automático son propuestas; no figuran como implementados.
 - iPhone/iPad y distribución pública de binarios quedan fuera del alcance de estabilización actual.
 
@@ -113,11 +114,12 @@ Cada entrega que modifique la app o corrija errores debe incrementar beta/build 
 | Beta 10 entregada | Filas de listas bajo demanda, búsqueda distante y recorridos seleccionados de interfaz/accesibilidad |
 | Beta 11 entregada | Contraste de selección con y sin foco en Editar/RAW |
 | Beta 12 entregada | Apertura nativa desde bienvenida, guardados/Undo, Recientes/reinicio y versiones exactas en el caso controlado |
-| Cierre de estabilización | Validar actualización instalada, uso diario, otros documentos/volúmenes, runtime 26.4 y matriz restante; completar VoiceOver cuando se retome su prueba y evaluar recuperación anterior al autosave |
+| Beta 13 entregada | Autoguardado periódico de un segundo, comparación y recuperación, Undo/Redo, varias ventanas, archivo grande y DMG local |
+| Cierre de estabilización | Validar actualización instalada, uso diario, otros documentos/volúmenes y matriz restante; cobertura 26.4 aplazada por falta de entorno; completar VoiceOver cuando se retome su prueba y evaluar recuperación anterior al autosave |
 | RC1 | Congelar funciones y usar durante 7 a 14 días; sin bugs críticos ni pérdida de contenido cuyo guardado/autosave había terminado |
 | 1.0 local | Cumplir los criterios y aceptar la candidata; no implica por sí mismo un instalador público notarizado |
 
-Antes de RC1 debe evaluarse una mitigación o aceptar expresamente el límite anterior al autosave. La siguiente corrección de app requeriría Beta 13. El roadmap no garantiza número de betas/fechas ni autoriza nuevas funcionalidades.
+Antes de RC1 debe evaluarse una mitigación o aceptar expresamente el límite anterior al autosave. La siguiente corrección de app requeriría Beta 14. El roadmap no garantiza número de betas/fechas ni autoriza nuevas funcionalidades.
 
 ## Reglas de colaboración y relevo
 
@@ -148,6 +150,6 @@ Antes de publicar, verificar el estado final con Gitleaks, TruffleHog y las regl
 
 ## Publicación del código
 
-El código Beta 12 se publicó en [JAndresVC/MarkD-macOS](https://github.com/JAndresVC/MarkD-macOS), rama `main`, con licencia MIT. El primer envío fue el commit `fa13d9a`, revisado antes de publicar. El remoto `origin` de esta copia apunta a ese repositorio. Este seguimiento documental registra el resultado; no cambia la app ni añade pruebas funcionales.
+El código Beta 12 se publicó en [JAndresVC/MarkD-macOS](https://github.com/JAndresVC/MarkD-macOS), rama `main`, con licencia MIT. El primer envío fue el commit `fa13d9a`, revisado antes de publicar. El remoto `origin` de esta copia apunta a ese repositorio. La actualización de Beta 13 incorpora autoguardado periódico y su documentación de validación. La historia pública sigue siendo independiente y conserva MIT y los créditos aprobados.
 
 La publicación del código como beta y la distribución de una app notarizada siguen siendo decisiones separadas.
