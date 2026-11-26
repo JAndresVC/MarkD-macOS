@@ -1,4 +1,14 @@
-# Validación de MarkD Beta 13
+# Validación de MarkD
+
+## Beta 14 · 2026-11-25
+
+La entrega local se comprobó en macOS 27.3, Xcode 27.2 y SDK macOS 27.2. Pasaron las once suites, el build Release, los metadatos y el instalador local. Se verificaron la firma, la integridad, el diseño y la coincidencia del contenido del DMG con Release.
+
+En QA aislada a 560 × 360 puntos de contenido, el contraste estimado del rótulo del selector pasó de 2,71–3,92:1 a 7,50–14,17:1 en los seis temas. En la app instalada, el selector y Buscar funcionaron en los tres modos a 560 puntos de ancho con la barra lateral visible. También se comprobó la búsqueda en un libro sintético de 5,42 MB y el guardado exacto de un documento pequeño tras Deshacer.
+
+En una prueba controlada, reiniciar Beta 13 y reemplazarla por el mismo binario conservaron una entrada de Recientes. Al actualizar a Beta 14 con el mismo identificador de aplicación y firma ad hoc, la entrada desapareció de Bienvenida y del menú Archivo. Volver al binario anterior tampoco la recuperó. El archivo se conservó intacto. La causa específica sigue en estudio.
+
+## Beta 13 · antecedentes
 
 Versión 0.2.0, build 13. QA funcional del 2026-11-14 en macOS 27.2.1 (26B131), Xcode 27.2 (27B52), SDK 27.2, arm64.
 

@@ -2,7 +2,7 @@
 
 Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para macOS, construido con SwiftUI y AppKit.
 
-**Estado: 0.2.0 Beta 13.** Proyecto en desarrollo; todavía no es una versión estable. Se compila desde el código y no ofrece un instalador público notarizado.
+**Estado: 0.2.0 Beta 14.** Proyecto en desarrollo; todavía no es una versión estable. Se compila desde el código y no ofrece un instalador público notarizado.
 
 ![Markdown con formato en Vista previa](docs/screenshots/preview.jpg)
 
@@ -18,7 +18,7 @@ Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para m
 
 ![Edición del documento de ejemplo](docs/screenshots/editor.jpg)
 
-Las capturas corresponden a Beta 9 y usan un documento sintético; no muestran archivos personales ni representan una nueva prueba de Beta 13.
+Las capturas corresponden a Beta 9 y usan un documento sintético; no muestran archivos personales ni representan la interfaz actual de Beta 14.
 
 ## Markdown y archivos
 
@@ -35,7 +35,7 @@ Beta 13 activa el autoguardado periódico nativo con mínimo de un segundo despu
 - macOS 26.4 o posterior como mínimo declarado por el proyecto.
 - Xcode 27 con SDK macOS 27 para compilar la beta actual.
 
-La QA funcional de Beta 13 del 2026-11-14 se ejecutó en macOS 27.2.1, Xcode 27.2 y SDK macOS 27.2 sobre Apple Silicon. **La ejecución en macOS 26.4 no está validada** y queda aplazada por falta de un entorno de prueba. El mínimo declarado se conserva; la estabilización local se evalúa en el entorno disponible.
+La QA de Beta 14 se ejecutó en macOS 27.3 con Xcode 27.2 y SDK macOS 27.2 sobre Apple Silicon. **La ejecución en macOS 26.4 no está validada** y queda aplazada por falta de un entorno de prueba. El mínimo declarado se conserva; la estabilización local se evalúa en el entorno disponible.
 
 ## Compilar y abrir
 
@@ -71,8 +71,8 @@ Esta entrada solicita el cierre normal de MarkD antes de recompilar y cancela la
 - **Una edición puede perderse si la app termina antes de completar un guardado o autosave.** Para persistir un cambio importante, usa ⌘S y comprueba que termine. La recuperación posterior al autosave pasó las pruebas; no se garantiza recuperar cada pulsación.
 - Una escritura externa directa puede dejar visible el texto anterior hasta resolver el conflicto nativo al guardar.
 - Párrafos y bloques de código individuales enormes aún pueden causar pausas. Hace falta ampliar la cobertura de edición sostenida y memoria/Leaks.
-- La corrección de permisos de Beta 12 pasó los recorridos controlados de apertura/guardado; faltan más documentos y volúmenes, además de comprobar Beta 13 instalada y el uso diario.
-- VoiceOver hablado y la matriz visual completa siguen pendientes. La navegación al encabezado final con Reducir movimiento activo se comprobó en Beta 10; esa prueba no cierra toda la validación de accesibilidad.
+- La apertura y el guardado pasaron con documentos sintéticos en Beta 14 instalada. Queda ampliar la prueba a uso diario y otros volúmenes. Al actualizar entre compilaciones con firma local pueden desaparecer las entradas de Recientes. Abrir los archivos de nuevo repuebla la lista.
+- Se comprobó el selector compacto de Beta 14 en los seis temas. VoiceOver hablado y el cruce completo de Beta 14 con los idiomas siguen pendientes. La navegación al encabezado final con Reducir movimiento activo se comprobó en Beta 10; esa prueba no cierra toda la validación de accesibilidad.
 
 Resultados, fechas y límites: [Validación](docs/VALIDATION.md). Próximas etapas: [guía del proyecto](PROJECT_GUIDE.md).
 
@@ -100,7 +100,7 @@ uv pip install --python .build/dmg-tools/bin/python --require-hashes -r script/d
 ./script/package_dmg.sh
 ```
 
-Genera `dist/MarkD-0.2.0-Beta-13-Installer.dmg`, con MarkD a la izquierda y Aplicaciones a la derecha. Valida la app y la imagen, y rechaza sobrescribir un archivo existente. Admite otra ruta de salida libre como primer argumento.
+Genera `dist/MarkD-0.2.0-Beta-14-Installer.dmg`, con MarkD a la izquierda y Aplicaciones a la derecha. Valida la app y la imagen, y rechaza sobrescribir un archivo existente. Admite otra ruta de salida libre como primer argumento.
 
 Las herramientas del instalador tienen versiones y hashes fijados; no se incorporan a la app. Los paquetes usan firma local para pruebas y no son una distribución pública notarizada. Compilaciones y DMG se excluyen de Git.
 

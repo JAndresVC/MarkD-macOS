@@ -1,6 +1,6 @@
 # MarkD: guía del proyecto
 
-Estado técnico: MarkD 0.2.0 Beta 13 (build 13), entrega funcional del 2026-11-14. La copia pública comenzó con Beta 12 y se actualiza con el mismo código técnico de la entrega Beta 13. [docs/VALIDATION.md](docs/VALIDATION.md) distingue la QA funcional de las verificaciones de la copia pública.
+Estado técnico de MarkD 0.2.0 Beta 14 (build 14), entrega local del 2026-11-25. Véanse [los resultados de validación](docs/VALIDATION.md).
 
 ## Objetivo y alcance
 
@@ -99,7 +99,8 @@ Cada entrega que modifique la app o corrija errores debe incrementar beta/build 
 
 - **Pérdida de edición anterior al guardado/autosave:** comprobada al terminar el proceso antes de persistir los bytes. Guardar con ⌘S y comprobar que termine para un cambio importante. No prometer recuperación de cada pulsación.
 - Escrituras externas directas pueden mantener la vista antigua hasta resolver el conflicto nativo. Las pruebas de escritura coordinada no prueban sincronización en vivo con todos los editores.
-- Falta completar matriz visual de seis temas, tres modos, tamaños y cuatro idiomas. El ancho compacto de 560 puntos tiene evidencia previa; la altura mínima y los cruces restantes siguen pendientes.
+- Beta 14 comprobó el contraste del selector compacto en los seis temas a 560 × 360 puntos de contenido en copia aislada y su funcionamiento a 560 puntos de ancho en la app instalada. La altura mínima en la instalación y el cruce de la corrección con los cuatro idiomas siguen pendientes.
+- Se reprodujo la desaparición de las entradas de Recientes al actualizar entre dos compilaciones con firma local. Los archivos permanecieron intactos. Queda aislar el papel de la firma.
 - Párrafos/código individuales enormes, edición sostenida y memoria/Leaks necesitan más cobertura. Las filas de listas grandes tienen la corrección bajo demanda de Beta 10.
 - QA-12 está corregido para el recorrido de apertura de bienvenida reproducido. Faltan más documentos/volúmenes y comprobar la actualización instalada y el uso diario.
 - VoiceOver hablado permanece aplazado. La ejecución en macOS 26.4 queda sin validar por falta de entorno y no bloquea por sí sola la estabilización local en macOS 27.2.1. La prueba parcial con Reducir movimiento activo no aprueba toda la accesibilidad.
@@ -115,11 +116,12 @@ Cada entrega que modifique la app o corrija errores debe incrementar beta/build 
 | Beta 11 entregada | Contraste de selección con y sin foco en Editar/RAW |
 | Beta 12 entregada | Apertura nativa desde bienvenida, guardados/Undo, Recientes/reinicio y versiones exactas en el caso controlado |
 | Beta 13 entregada | Autoguardado periódico de un segundo, comparación y recuperación, Undo/Redo, varias ventanas, archivo grande y DMG local |
-| Cierre de estabilización | Validar actualización instalada, uso diario, otros documentos/volúmenes y matriz restante; cobertura 26.4 aplazada por falta de entorno; completar VoiceOver cuando se retome su prueba y evaluar recuperación anterior al autosave |
+| Beta 14 entregada | Contraste del selector compacto, seis temas, comprobación instalada y DMG local |
+| Cierre de estabilización | Investigar continuidad de Recientes, validar uso diario, otros documentos y volúmenes, y evaluar recuperación anterior al autosave. macOS 26.4 y VoiceOver hablado siguen aplazados. |
 | RC1 | Congelar funciones y usar durante 7 a 14 días; sin bugs críticos ni pérdida de contenido cuyo guardado/autosave había terminado |
 | 1.0 local | Cumplir los criterios y aceptar la candidata; no implica por sí mismo un instalador público notarizado |
 
-Antes de RC1 debe evaluarse una mitigación o aceptar expresamente el límite anterior al autosave. La siguiente corrección de app requeriría Beta 14. El roadmap no garantiza número de betas/fechas ni autoriza nuevas funcionalidades.
+Antes de RC1 debe evaluarse una mitigación o aceptar expresamente el límite anterior al autosave. Una nueva corrección de la app requiere Beta 15 y un DMG local validado. El roadmap no garantiza número de betas/fechas ni autoriza nuevas funcionalidades.
 
 ## Reglas de colaboración y relevo
 

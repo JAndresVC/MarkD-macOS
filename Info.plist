@@ -71,9 +71,9 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MarkD $(MARKETING_VERSION) Beta 13</string>
+	<string>MarkD $(MARKETING_VERSION) Beta 14</string>
 	<key>MarkDReleaseChannel</key>
-	<string>Beta 13</string>
+	<string>Beta 14</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>

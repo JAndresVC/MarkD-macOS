@@ -1,3 +1,9 @@
+# MarkD 0.2.0 Beta 14 (build 14)
+
+Entrega local del 25 de noviembre de 2026. El selector compacto usa el color primario de macOS para que los rótulos de Editar, Vista previa y RAW se lean en los seis temas. La estimación de contraste en capturas pasó de 2,71–3,92:1 a 7,50–14,17:1 al tamaño mínimo en QA aislada.
+
+Pasaron las once suites, la compilación Release y la verificación del instalador local. La app instalada pasó apertura, autoguardado, búsqueda en un libro sintético y selector a 560 puntos de ancho. Al actualizar entre compilaciones con firma local se reprodujo la desaparición de entradas de Recientes. Los archivos de prueba conservaron su contenido. [Resultados y límites](docs/VALIDATION.md).
+
 # MarkD 0.2.0 Beta 13 (build 13)
 
 Entrega funcional del 2026-11-14, comprobada en macOS 27.2.1 con Xcode 27.2 y SDK 27.2.

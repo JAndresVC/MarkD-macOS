@@ -41,6 +41,7 @@ private struct ModeToolbarControl: View {
                     .labelStyle(.titleAndIcon)
             }
             .menuStyle(.borderlessButton)
+            .tint(Color.primary)
             .fixedSize()
             .help(strings.mode)
             .accessibilityLabel(strings.mode)
