@@ -6,7 +6,8 @@ script_dir=${0:A:h}
 project_dir=${script_dir:h}
 app_name="MarkD"
 version="0.2.0"
-release_channel="Beta 14"
+build_number=${MARKD_BUILD_VERSION:-18}
+release_channel=${MARKD_RELEASE_CHANNEL:-"Beta $build_number (Piloto)"}
 safe_channel=${release_channel// /-}
 default_output="$project_dir/dist/$app_name-$version-$safe_channel-Installer.dmg"
 output_path=${1:-$default_output}
@@ -36,7 +37,8 @@ if [[ -z ${MARKD_APP_PATH:-} ]]; then
         -configuration Release \
         -destination "platform=macOS" \
         -derivedDataPath "$derived_data" \
-        build
+        -onlyUsePackageVersionsFromResolvedFile \
+        "CURRENT_PROJECT_VERSION=$build_number" "MARKD_RELEASE_CHANNEL=$release_channel" build
 fi
 
 "$script_dir/test_bundle_metadata.sh" "$app_path"

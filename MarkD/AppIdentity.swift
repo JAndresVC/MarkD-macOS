@@ -5,7 +5,7 @@ enum AppIdentity {
 
     static var versionDescription: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.2.0"
-        let channel = Bundle.main.object(forInfoDictionaryKey: "MarkDReleaseChannel") as? String ?? "Beta 14"
+        let channel = Bundle.main.object(forInfoDictionaryKey: "MarkDReleaseChannel") as? String ?? "Beta 18 (Piloto)"
         return "\(version) \(channel)"
     }
 }

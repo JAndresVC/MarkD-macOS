@@ -5,6 +5,7 @@ import AppKit
 struct MarkDApp: App {
     @NSApplicationDelegateAdaptor(MarkDAppDelegate.self) private var appDelegate
     @AppStorage("appLanguage") private var storedLanguage = AppLanguage.system.rawValue
+    @StateObject private var updater = AppUpdater()
 
     var body: some Scene {
         DocumentGroup(newDocument: MarkDocument()) { file in
@@ -15,6 +16,7 @@ struct MarkDApp: App {
         .windowResizability(.contentMinSize)
         .defaultLaunchBehavior(.suppressed)
         .commands {
+            UpdateCommands(updater: updater)
             FindCommands()
             ViewModeCommands()
             ThemeCommands()

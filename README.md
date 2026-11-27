@@ -2,7 +2,7 @@
 
 Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para macOS, construido con SwiftUI y AppKit.
 
-**Estado: 0.2.0 Beta 14.** Proyecto en desarrollo; todavía no es una versión estable. Se compila desde el código y no ofrece un instalador público notarizado.
+**Estado: 0.2.0, piloto de distribución.** Proyecto en desarrollo. Los DMG del piloto usan firma de desarrollo y carecen de notarización de Apple.
 
 ![Markdown con formato en Vista previa](docs/screenshots/preview.jpg)
 
@@ -18,7 +18,7 @@ Un espacio para tus palabras. MarkD es un lector y editor Markdown nativo para m
 
 ![Edición del documento de ejemplo](docs/screenshots/editor.jpg)
 
-Las capturas corresponden a Beta 9 y usan un documento sintético; no muestran archivos personales ni representan la interfaz actual de Beta 14.
+Las capturas corresponden a Beta 9 y usan un documento sintético.
 
 ## Markdown y archivos
 

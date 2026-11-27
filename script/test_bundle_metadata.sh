@@ -3,6 +3,8 @@
 set -euo pipefail
 
 app_path=${1:?"usage: test_bundle_metadata.sh /path/to/MarkD.app"}
+expected_build=${MARKD_BUILD_VERSION:-18}
+expected_channel=${MARKD_RELEASE_CHANNEL:-"Beta $expected_build (Piloto)"}
 plist="$app_path/Contents/Info.plist"
 
 if [[ ! -f "$plist" ]]; then
@@ -46,8 +48,28 @@ if [[ "$icon_name" != "AppIcon" || ! -f "$app_path/Contents/Resources/AppIcon.ic
     exit 1
 fi
 
-if [[ "$short_version" != "0.2.0" || "$build_version" != "14" || "$release_channel" != "Beta 14" ]]; then
-    print -u2 "FAIL: expected MarkD 0.2.0 Beta 14 (build 14), found $short_version $release_channel (build $build_version)"
+if [[ "$short_version" != "0.2.0" || "$build_version" != "$expected_build" || "$release_channel" != "$expected_channel" ]]; then
+    print -u2 "FAIL: expected MarkD 0.2.0 $expected_channel (build $expected_build), found $short_version $release_channel (build $build_version)"
+    exit 1
+fi
+
+for key in SUEnableInstallerLauncherService SUEnableDownloaderService SUVerifyUpdateBeforeExtraction SURequireSignedFeed; do
+    if [[ $(/usr/bin/plutil -extract "$key" raw -expect bool -o - "$plist") != "true" ]]; then
+        print -u2 "FAIL: expected true for $key"
+        exit 1
+    fi
+done
+for key in SUEnableAutomaticChecks SUAllowsAutomaticUpdates; do
+    if [[ $(/usr/bin/plutil -extract "$key" raw -expect bool -o - "$plist") != "false" ]]; then
+        print -u2 "FAIL: expected false for $key"
+        exit 1
+    fi
+done
+
+sparkle="$app_path/Contents/Frameworks/Sparkle.framework/Versions/B"
+if [[ ! -x "$sparkle/Sparkle" || ! -d "$sparkle/XPCServices/Installer.xpc" ||
+      ! -d "$sparkle/XPCServices/Downloader.xpc" || ! -f "$app_path/Contents/Resources/Sparkle-LICENSE.txt" ]]; then
+    print -u2 "FAIL: Sparkle, its XPC services or its license are missing"
     exit 1
 fi
 

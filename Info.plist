@@ -71,12 +71,30 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MarkD $(MARKETING_VERSION) Beta 14</string>
+	<string>MarkD $(MARKETING_VERSION) $(MARKD_RELEASE_CHANNEL)</string>
 	<key>MarkDReleaseChannel</key>
-	<string>Beta 14</string>
+	<string>$(MARKD_RELEASE_CHANNEL)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
 	<string></string>
+	<key>SUFeedURL</key>
+	<string>$(MARKD_UPDATE_FEED_URL)</string>
+	<key>SUPublicEDKey</key>
+	<string>$(MARKD_UPDATE_PUBLIC_KEY)</string>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUEnableDownloaderService</key>
+	<true/>
+	<key>SUEnableAutomaticChecks</key>
+	<false/>
+	<key>SUAllowsAutomaticUpdates</key>
+	<false/>
+	<key>SUVerifyUpdateBeforeExtraction</key>
+	<true/>
+	<key>SURequireSignedFeed</key>
+	<true/>
+	<key>SUSignedFeedFailureExpirationInterval</key>
+	<integer>0</integer>
 </dict>
 </plist>

@@ -76,6 +76,9 @@ struct L10n {
     let loadingDocument: String
 
     // Menus
+    let checkForUpdates: String
+    let updatesUnavailable: String
+    let updatesUnavailableDetail: String
     let theme: String
     let fontSize: String
     let increase: String
@@ -132,6 +135,9 @@ struct L10n {
         noHeadings: "No Headings",
         noHeadingsHint: "Add headings with # to see the outline.",
         loadingDocument: "Preparing document…",
+        checkForUpdates: "Check for Updates…",
+        updatesUnavailable: "Updates are not available yet",
+        updatesUnavailableDetail: "This build does not have an update channel configured.",
         theme: "Theme",
         fontSize: "Font Size",
         increase: "Increase",
@@ -201,6 +207,9 @@ struct L10n {
         noHeadings: "Sin encabezados",
         noHeadingsHint: "Añade encabezados con # para ver el esquema.",
         loadingDocument: "Preparando documento…",
+        checkForUpdates: "Buscar actualizaciones…",
+        updatesUnavailable: "Las actualizaciones aún no están disponibles",
+        updatesUnavailableDetail: "Esta compilación no tiene un canal de actualización configurado.",
         theme: "Tema",
         fontSize: "Tamaño de letra",
         increase: "Aumentar",
@@ -270,6 +279,9 @@ struct L10n {
         noHeadings: "Sense encapçalaments",
         noHeadingsHint: "Afegeix encapçalaments amb # per veure l'esquema.",
         loadingDocument: "Preparant el document…",
+        checkForUpdates: "Cerca actualitzacions…",
+        updatesUnavailable: "Les actualitzacions encara no estan disponibles",
+        updatesUnavailableDetail: "Aquesta compilació no té cap canal d’actualització configurat.",
         theme: "Tema",
         fontSize: "Mida de la lletra",
         increase: "Augmenta",
@@ -339,6 +351,9 @@ struct L10n {
         noHeadings: "見出しがありません",
         noHeadingsHint: "# で見出しを追加するとアウトラインが表示されます。",
         loadingDocument: "書類を準備中…",
+        checkForUpdates: "アップデートを確認…",
+        updatesUnavailable: "アップデートはまだ利用できません",
+        updatesUnavailableDetail: "このビルドにはアップデートチャンネルが設定されていません。",
         theme: "テーマ",
         fontSize: "文字サイズ",
         increase: "拡大",
