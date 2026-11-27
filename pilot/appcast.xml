@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>MarkD</title>
+        <item>
+            <title>0.2.0</title>
+            <pubDate>Fri, 27 Nov 2026 07:32:40 -0600</pubDate>
+            <sparkle:version>18</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.4</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description sparkle:format="markdown"><![CDATA[# MarkD 0.2.0 · Beta 18 (Piloto)
+
+Prueba esta beta con un documento de ejemplo en una Mac con Apple Silicon y macOS 27.3. El instalador tiene firma de desarrollo. macOS puede bloquear su primera apertura por falta de notarización. Si la instalación se detiene, registra el texto exacto del aviso y la versión de macOS. [Información de Apple sobre Gatekeeper](https://support.apple.com/es-es/102445)
+
+1. Descarga el DMG y arrastra MarkD a Aplicaciones.
+2. Abre un Markdown de prueba y guárdalo.
+3. Cuando esté disponible Beta 19, usa **MarkD → Buscar actualizaciones…** y elige instalar y reiniciar.
+4. Confirma la versión y vuelve a abrir el documento desde Recientes. Registra el resultado y cualquier aviso.
+]]></description>
+            <enclosure url="https://github.com/JAndresVC/MarkD-macOS/releases/download/v0.2.0-pilot.18/MarkD-0.2.0-Pilot-18.dmg" length="4052377" type="application/octet-stream" sparkle:edSignature="4zGJafjD0iEnBfZGgaslsCk7UDbz8JjtExjUcduW3u1FxDNenVsRaAQhEhEmimzAJ4LfSTr5azlfxqqtQo5yDw=="></enclosure>
+        </item>
+    </channel>
+</rss><!-- sparkle-signatures:
+edSignature: vY9lFkAx2fF+IqLAS5rr9KhTvvHdjPR06n9X41KVOADRJt7Vwd6ovAA2NxniOnesD9i5hXwGVO1AAeNItflOBg==
+length: 1937
+-->
